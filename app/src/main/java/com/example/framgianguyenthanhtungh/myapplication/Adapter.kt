@@ -8,13 +8,19 @@ import android.view.ViewGroup
 import android.widget.TextView
 import com.example.framgianguyenthanhtungh.myapplication.databinding.ItemBinding
 
-class Adapter(val list: ArrayList<Item>) : RecyclerView.Adapter<BaseViewHolder<ViewDataBinding>>() {
+class Adapter(val list: ArrayList<Item>, val onItemClick: (Item) -> Unit)
+    : RecyclerView.Adapter<BaseViewHolder<ViewDataBinding>>() {
 
     override fun onCreateViewHolder(p0: ViewGroup, p1: Int): BaseViewHolder<ViewDataBinding> {
         val binding: ViewDataBinding = DataBindingUtil.inflate(
             LayoutInflater.from(p0.context),
             R.layout.item, p0, false
         )
+        binding.apply {
+            root.setOnClickListener {
+                if (this is ItemBinding) this.item?.let { onItemClick.invoke(it) }
+            }
+        }
         return BaseViewHolder(binding)
     }
 
@@ -25,7 +31,7 @@ class Adapter(val list: ArrayList<Item>) : RecyclerView.Adapter<BaseViewHolder<V
     override fun onBindViewHolder(p0: BaseViewHolder<ViewDataBinding>, p1: Int) {
         if (p0.binding is ItemBinding) p0.binding.item = list[p1]
         val textView: TextView = p0.binding.root.findViewById(R.id.text)
-        textView.setText(list[p1].string)
+        textView.text = list[p1].string
         p0.binding.executePendingBindings()
     }
 
